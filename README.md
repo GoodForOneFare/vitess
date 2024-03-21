@@ -6,7 +6,7 @@
 
 # Vitess 
 
-Vitess is a database clustering system for horizontal scaling of MySQL
+sVitess is a database clustering system for horizontal scaling of MySQL
 through generalized sharding.
 
 By encapsulating shard-routing logic, Vitess allows application code and
