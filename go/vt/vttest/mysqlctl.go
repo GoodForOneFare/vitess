@@ -22,6 +22,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+        "strconv"
 	"strings"
 	"time"
 
@@ -83,8 +84,20 @@ func (ctl *Mysqlctl) Setup() error {
 // Start spawns a mysqld service for an existing data directory
 // The service is kept running in the background until TearDown() is called.
 func (ctl *Mysqlctl) Start() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-	defer cancel()
+      timeoutStr := os.Getenv("MYSQLCTL_BOOT_TIMEOUT")
+      timeout := 60 // default timeout if MYSQL_TIMEOUT is not set or not a valid number
+      if len(timeoutStr) > 0 {
+              var err error
+              timeout, err = strconv.Atoi(timeoutStr)
+              if err != nil {
+                      log.Errorf("Invalid MYSQL_TIMEOUT value, using default: %s", err.Error())
+                      timeout = 60
+              }
+      }
+
+      ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+	
+        defer cancel()
 
 	cmd := exec.CommandContext(ctx,
 		ctl.Binary,
